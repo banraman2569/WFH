@@ -1057,7 +1057,7 @@
               
               let badgeOutClass = "out"; let iconOut = "log-out"; let textOutAppend = "";
               if (log.isEarly) { badgeOutClass = "early"; iconOut = "clock-8"; textOutAppend = " (ก่อน)"; }
-              if (log.note && log.note.includes("AUTO")) { textOutAppend = " (Auto)"; }
+              if (log.note && log.note.includes("AUTO")) { textOutAppend = " "; }
               let badgeOut = log.timeOut !== "-" ? `<span class="badge-time ${badgeOutClass}"><i data-lucide="${iconOut}" size="14"></i> ${log.timeOut}${textOutAppend}</span>` : `<span class="badge-time none">--:--</span>`;
               
               let specialBadge = `<span class="badge-time none">-</span>`;
