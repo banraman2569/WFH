@@ -461,7 +461,7 @@
             </div>
 
             <div class="action-btn leave" onclick="handleLeave()">
-              <div class="action-left"><div class="action-icon"><i data-lucide="calendar-off" size="26"></i></div> <div class="action-titles"> <h4 class="action-title">แจ้งลาหยุด</h4><div class="action-subtitle"><i data-lucide="edit-3" size="14"></i> ระบุสาเหตุการลา</div></div></div>
+              <div class="action-left"><div class="action-icon"><i data-lucide="calendar-off" size="26"></i></div> <div class="action-titles"> <h4 class="action-title">แจ้งลาหยุด/เข้าสาย</h4><div class="action-subtitle"><i data-lucide="edit-3" size="14"></i> เลือกการลา/เข้าสาย</div></div></div>
               <div class="status-badge empty" id="statusBadgeLeave"><i data-lucide="check-circle" size="18"></i> <span>--:--</span></div>
             </div>
 
@@ -908,7 +908,7 @@
                 let badge = '';
                 if(item.action === 'IN') badge = `<span class="badge-time in"><i data-lucide="log-in" size="14"></i> ลงเวลามา</span>`;
                 else if(item.action === 'OUT') badge = `<span class="badge-time out"><i data-lucide="log-out" size="14"></i> ลงเวลากลับ</span>`;
-                else if(item.action === 'LEAVE') badge = `<span class="badge-time leave"><i data-lucide="calendar-off" size="14"></i> แจ้งลาหยุด</span>`;
+                else if(item.action === 'LEAVE') badge = `<span class="badge-time leave"><i data-lucide="calendar-off" size="14"></i> แจ้งลาหยุด/เข้าสาย</span>`;
                 else if(item.action === 'OFFICIAL') badge = `<span class="badge-time official"><i data-lucide="briefcase" size="14"></i> ไปราชการ</span>`;
                 else if(item.action === 'OUT_SCHOOL') badge = `<span class="badge-time leave"><i data-lucide="map" size="14"></i> ออกนอกบริเวณ</span>`;
                 
@@ -1405,7 +1405,7 @@
       else {
         historyData.forEach(function(h) {
           const isIn = h.action === 'IN'; const isLeave = h.action === 'LEAVE'; const isOfficial = h.action === 'OFFICIAL'; const isOutSchool = h.action === 'OUT_SCHOOL';
-          const actionTxt = isIn ? 'ลงเวลาเข้างาน' : (isLeave ? 'แจ้งลาหยุด' : (isOfficial ? 'ไปราชการ' : (isOutSchool ? 'ออกนอกบริเวณ' : 'ลงเวลากลับ')));
+          const actionTxt = isIn ? 'ลงเวลาเข้างาน' : (isLeave ? 'แจ้งลาหยุด/เข้าสาย' : (isOfficial ? 'ไปราชการ' : (isOutSchool ? 'ออกนอกบริเวณ' : 'ลงเวลากลับ')));
           const statusClass = isIn ? 'in' : (isLeave ? 'leave' : (isOfficial ? 'official' : (isOutSchool ? 'leave' : 'out')));
           const borderClass = isIn ? 'is-in' : (isLeave ? 'is-leave' : (isOfficial ? 'is-official' : (isOutSchool ? 'is-leave' : 'is-out')));
           const iconName = isIn ? 'log-in' : (isLeave ? 'calendar-off' : (isOfficial ? 'briefcase' : (isOutSchool ? 'map' : 'log-out')));
@@ -1421,7 +1421,7 @@
       if(!currentUser) return Swal.fire('ผิดพลาด', 'กรุณาล็อกอินใหม่', 'error');
       const badgeIn = document.getElementById('statusBadgeIn'); const badgeOut = document.getElementById('statusBadgeOut'); const badgeLeave = document.getElementById('statusBadgeLeave'); const badgeOfficial = document.getElementById('statusBadgeOfficial');
 
-      if (badgeLeave && !badgeLeave.classList.contains('empty')) return Swal.fire({ title: 'ไม่สามารถลงเวลาได้', text: 'ระบบพบว่าวันนี้คุณได้ทำการแจ้งลาหยุดไปแล้วครับ', icon: 'warning', confirmButtonColor: '#f43f5e' });
+      if (badgeLeave && !badgeLeave.classList.contains('empty')) return Swal.fire({ title: 'ไม่สามารถลงเวลาได้', text: 'ระบบพบว่าวันนี้คุณได้ทำการแจ้งลาหยุด/เข้าสายไปแล้วครับ', icon: 'warning', confirmButtonColor: '#f43f5e' });
       if (badgeOfficial && !badgeOfficial.classList.contains('empty')) return Swal.fire({ title: 'ไม่สามารถลงเวลาได้', text: 'ระบบพบว่าวันนี้คุณได้บันทึกไปราชการแล้วครับ', icon: 'warning', confirmButtonColor: '#7c3aed' });
       if (action === 'IN' && badgeIn && !badgeIn.classList.contains('empty')) return Swal.fire({ title: 'ลงเวลามาแล้ว', text: 'วันนี้คุณได้ทำการลงเวลามาไปแล้วครับ', icon: 'info', confirmButtonColor: '#f43f5e' });
       if (action === 'OUT') {
@@ -1457,7 +1457,7 @@
       if (badgeLeave && !badgeLeave.classList.contains('empty')) return Swal.fire({ title: 'คุณแจ้งลาไปแล้ว', text: 'วันนี้คุณได้ทำการแจ้งลาไปแล้วครับ', icon: 'info', confirmButtonColor: '#f43f5e' });
       if (badgeOfficial && !badgeOfficial.classList.contains('empty')) return Swal.fire({ title: 'ไม่สามารถแจ้งลาได้', text: 'วันนี้คุณได้บันทึกไปราชการไว้แล้ว หากต้องการเปลี่ยนสถานะ กรุณาให้ผู้ดูแลยกเลิกข้อมูลเดิมก่อน', icon: 'warning', confirmButtonColor: '#7c3aed' });
 
-      Swal.fire({ title: 'แจ้งลาหยุด', input: 'select', inputOptions: { 'ลาป่วย': 'ลาป่วย', 'ลากิจ': 'ลากิจ', 'เข้าสาย': 'เข้าสาย', 'อื่นๆ': 'อื่นๆ' }, inputPlaceholder: 'เลือกประเภทการลา', showCancelButton: true, confirmButtonText: 'ถัดไป', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#3b82f6', inputValidator: (value) => { return new Promise((resolve) => { if (value) resolve(); else resolve('กรุณาเลือกประเภทการลา'); }); }
+      Swal.fire({ title: 'แจ้งลาหยุด/เข้าสาย', input: 'select', inputOptions: { 'ลาป่วย': 'ลาป่วย', 'ลากิจ': 'ลากิจ', 'เข้าสาย': 'เข้าสาย', 'อื่นๆ': 'อื่นๆ' }, inputPlaceholder: 'เลือกประเภทการลา/เข้าสาย', showCancelButton: true, confirmButtonText: 'ถัดไป', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#3b82f6', inputValidator: (value) => { return new Promise((resolve) => { if (value) resolve(); else resolve('กรุณาเลือกประเภทการลา/เข้าสาย'); }); }
       }).then((result) => {
         if (result.isConfirmed) {
           let leaveType = result.value;
@@ -1481,9 +1481,9 @@
       const badgeLeave = document.getElementById('statusBadgeLeave'); const badgeOfficial = document.getElementById('statusBadgeOfficial');
 
       if (badgeOfficial && !badgeOfficial.classList.contains('empty')) { return Swal.fire({ title: 'บันทึกแล้ว', text: 'วันนี้คุณได้บันทึกการไปราชการไว้แล้วครับ', icon: 'info', confirmButtonColor: '#7c3aed' }); }
-      if (badgeLeave && !badgeLeave.classList.contains('empty')) { return Swal.fire({ title: 'ไม่สามารถบันทึกไปราชการได้', text: 'วันนี้คุณได้แจ้งลาหยุดไว้แล้ว หากต้องการเปลี่ยนสถานะ กรุณาให้ผู้ดูแลยกเลิกการลาก่อน', icon: 'warning', confirmButtonColor: '#7c3aed' }); }
+      if (badgeLeave && !badgeLeave.classList.contains('empty')) { return Swal.fire({ title: 'ไม่สามารถบันทึกไปราชการได้', text: 'วันนี้คุณได้แจ้งลาหยุด/เข้าสายไว้แล้ว หากต้องการเปลี่ยนสถานะ กรุณาให้ผู้ดูแลยกเลิกการลาก่อน', icon: 'warning', confirmButtonColor: '#7c3aed' }); }
 
-      Swal.fire({ title: 'บันทึกไปราชการ', input: 'textarea', inputLabel: 'รายละเอียดการไปราชการ', inputPlaceholder: 'เช่น ประชุม/อบรม/ปฏิบัติราชการ ณ ...', showCancelButton: true, confirmButtonText: 'ยืนยันการไปราชการ', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#7c3aed', inputValidator: (value) => { if (!String(value || '').trim()) return 'กรุณาระบุรายละเอียดการไปราชการ'; }
+      Swal.fire({ title: 'บันทึกไปราชการ', input: 'textarea', inputLabel: 'รายละเอียดการไปราชการ', inputPlaceholder: 'โปรดระบุ...1.เรื่อง... 2.สถานที่...', showCancelButton: true, confirmButtonText: 'ยืนยันการไปราชการ', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#7c3aed', inputValidator: (value) => { if (!String(value || '').trim()) return 'กรุณาระบุรายละเอียดการไปราชการ'; }
       }).then((result) => { if (result.isConfirmed) { submitOfficialAction(String(result.value || '').trim()); } });
     }
 
