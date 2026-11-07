@@ -182,6 +182,8 @@
     .action-btn.leave .status-badge { color: #1d4ed8; font-family: 'Sarabun'; }
     .action-btn.official { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); }
     .action-btn.official .status-badge { color: #6d28d9; font-family: 'Sarabun'; }
+    .action-btn.outschool { background: linear-gradient(135deg, #14b8a6 0%, #0f766e 100%); }
+    .action-btn.outschool .status-badge { color: #0f766e; font-family: 'Sarabun'; }
 
     /* ADMIN DASHBOARD */
     .admin-layout { display: flex; min-height: 100vh; background: transparent; position: relative; }
@@ -394,7 +396,6 @@
         <button type="submit" class="btn-main">ล็อกอินเข้าใช้งาน</button>
       </form>
       <div class="login-footer">
-        <!-- <div><span>ยังไม่มีบัญชีผู้ใช้?</span> <a onclick="openRegisterModal()">สมัครสมาชิกใหม่</a></div> -->
         <div><a class="admin-link" onclick="promptAdminLogin()"><i data-lucide="shield-check" size="14"></i> สำหรับผู้ดูแลระบบ (Admin)</a></div>
       </div>
     </div>
@@ -467,6 +468,11 @@
             <div class="action-btn official" onclick="handleOfficialDuty()">
               <div class="action-left"><div class="action-icon"><i data-lucide="briefcase" size="26"></i></div> <div class="action-titles"> <h4 class="action-title">ไปราชการ</h4><div class="action-subtitle"><i data-lucide="file-text" size="14"></i> บันทึกการปฏิบัติราชการนอกสถานที่</div></div></div>
               <div class="status-badge empty" id="statusBadgeOfficial"><i data-lucide="check-circle" size="18"></i> <span>--:--</span></div>
+            </div>
+
+            <div class="action-btn outschool" onclick="handleLeaveSchool()">
+              <div class="action-left"><div class="action-icon"><i data-lucide="map" size="26"></i></div> <div class="action-titles"> <h4 class="action-title">ขออนุญาตออกนอกบริเวณโรงเรียน</h4><div class="action-subtitle"><i data-lucide="file-text" size="14"></i> ระบุเหตุผลและผู้แทน</div></div></div>
+              <div class="status-badge empty" id="statusBadgeOutschool"><i data-lucide="edit-3" size="18"></i> <span>กรอกข้อมูล</span></div>
             </div>
           </div>
 
@@ -834,7 +840,7 @@
         const response = await fetch(GAS_WEB_APP_URL, {
           method: 'POST',
           headers: {
-            'Content-Type': 'text/plain;charset=utf-8', // ป้องกัน CORS Preflight Issue ในบางบราวเซอร์
+            'Content-Type': 'text/plain;charset=utf-8', 
           },
           body: JSON.stringify({ action: action, payload: payload })
         });
@@ -865,12 +871,10 @@
     window.onload = function() {
       updateClock(); setInterval(updateClock, 1000);
       
-      // แสดงหน้า Public History ก่อนเป็นอันดับแรก
       document.getElementById('appLogin').style.display = 'none';
       document.getElementById('appPublicHistory').style.display = 'block';
       loadPublicHistory();
       
-      // อัปเดตการดึงข้อมูลจาก API
       fetchAPI('getInitialData')
         .then(function(data) {
           sysConfig = data; 
@@ -906,6 +910,7 @@
                 else if(item.action === 'OUT') badge = `<span class="badge-time out"><i data-lucide="log-out" size="14"></i> ลงเวลากลับ</span>`;
                 else if(item.action === 'LEAVE') badge = `<span class="badge-time leave"><i data-lucide="calendar-off" size="14"></i> แจ้งลาหยุด</span>`;
                 else if(item.action === 'OFFICIAL') badge = `<span class="badge-time official"><i data-lucide="briefcase" size="14"></i> ไปราชการ</span>`;
+                else if(item.action === 'OUT_SCHOOL') badge = `<span class="badge-time leave"><i data-lucide="map" size="14"></i> ออกนอกบริเวณ</span>`;
                 
                 html += `<tr>
                   <td style="font-weight:700;">${item.time} น.</td>
@@ -1065,6 +1070,8 @@
                 specialBadge = `<span class="badge-time leave"><i data-lucide="calendar-off" size="14"></i> ${log.leave}</span>`;
               } else if (log.official !== "-") {
                 specialBadge = `<span class="badge-time official"><i data-lucide="briefcase" size="14"></i> ไปราชการ: ${log.official}</span>`;
+              } else if (log.out_school !== "-") {
+                specialBadge = `<span class="badge-time leave"><i data-lucide="map" size="14"></i> นอกสถานที่: ${log.out_school}</span>`;
               }
 
               let actionHtml = '-';
@@ -1177,7 +1184,6 @@
       });
     }
 
-
     function confirmCancelOfficialDuty(uid, dateInput) {
       Swal.fire({
         title: 'ยืนยันการยกเลิกไปราชการ?',
@@ -1213,7 +1219,7 @@
             data.forEach(log => {
               let badgeStyle = "background:#f1f5f9; color:#475569; border: 1px solid #cbd5e1;";
               if(log.action === "LOGIN") badgeStyle = "background:#e0f2fe; color:#0369a1; border: 1px solid #bae6fd;";
-              if(log.action.includes("ATTENDANCE")) badgeStyle = "background:#ecfdf5; color:#059669; border: 1px solid #a7f3d0;";
+              if(log.action.includes("ATTENDANCE") || log.action === "LEAVE_SCHOOL") badgeStyle = "background:#ecfdf5; color:#059669; border: 1px solid #a7f3d0;";
               if(log.action === "CONFIG") badgeStyle = "background:#fef2f2; color:#e11d48; border: 1px solid #fecdd3;";
               if(log.action === "DELETE_USER" || log.action === "CANCEL_LEAVE" || log.action === "CANCEL_OFFICIAL") badgeStyle = "background:#fef2f2; color:#b91c1c; border: 1px solid #fecaca;";
               
@@ -1398,11 +1404,11 @@
       if (!historyData || historyData.length === 0) { html = `<div style="text-align:center; padding: 40px 20px; background: rgba(255,255,255,0.8); border-radius: 16px; border: 1px dashed #cbd5e1; margin-top: 10px;"><i data-lucide="clock-4" size="32" style="color:var(--text-muted); margin-bottom:10px;"></i><div style="color:var(--text-sub); font-size:0.95rem; font-weight:600;">ยังไม่มีรายการลงเวลาในวันนี้</div></div>`; } 
       else {
         historyData.forEach(function(h) {
-          const isIn = h.action === 'IN'; const isLeave = h.action === 'LEAVE'; const isOfficial = h.action === 'OFFICIAL';
-          const actionTxt = isIn ? 'ลงเวลาเข้างาน' : (isLeave ? 'แจ้งลาหยุด' : (isOfficial ? 'ไปราชการ' : 'ลงเวลากลับ'));
-          const statusClass = isIn ? 'in' : (isLeave ? 'leave' : (isOfficial ? 'official' : 'out'));
-          const borderClass = isIn ? 'is-in' : (isLeave ? 'is-leave' : (isOfficial ? 'is-official' : 'is-out'));
-          const iconName = isIn ? 'log-in' : (isLeave ? 'calendar-off' : (isOfficial ? 'briefcase' : 'log-out'));
+          const isIn = h.action === 'IN'; const isLeave = h.action === 'LEAVE'; const isOfficial = h.action === 'OFFICIAL'; const isOutSchool = h.action === 'OUT_SCHOOL';
+          const actionTxt = isIn ? 'ลงเวลาเข้างาน' : (isLeave ? 'แจ้งลาหยุด' : (isOfficial ? 'ไปราชการ' : (isOutSchool ? 'ออกนอกบริเวณ' : 'ลงเวลากลับ')));
+          const statusClass = isIn ? 'in' : (isLeave ? 'leave' : (isOfficial ? 'official' : (isOutSchool ? 'leave' : 'out')));
+          const borderClass = isIn ? 'is-in' : (isLeave ? 'is-leave' : (isOfficial ? 'is-official' : (isOutSchool ? 'is-leave' : 'is-out')));
+          const iconName = isIn ? 'log-in' : (isLeave ? 'calendar-off' : (isOfficial ? 'briefcase' : (isOutSchool ? 'map' : 'log-out')));
           const dateText = h.date ? h.date : 'บันทึกเรียบร้อย';
           const noteText = h.note ? ` • ${h.note}` : '';
           html += `<div class="history-item ${borderClass}"><div class="hist-icon-box"><i data-lucide="${iconName}" size="18"></i></div><div class="hist-left"><div><div class="hist-title">${actionTxt}</div><div class="hist-sub"><i data-lucide="calendar-check-2" size="14"></i> ${dateText}${noteText}</div></div></div><div class="hist-right"><div class="hist-time">${h.time} น.</div><div class="hist-status ${statusClass}"><i data-lucide="check-circle-2" size="12"></i> สำเร็จ</div></div></div>`;
@@ -1451,7 +1457,7 @@
       if (badgeLeave && !badgeLeave.classList.contains('empty')) return Swal.fire({ title: 'คุณแจ้งลาไปแล้ว', text: 'วันนี้คุณได้ทำการแจ้งลาไปแล้วครับ', icon: 'info', confirmButtonColor: '#f43f5e' });
       if (badgeOfficial && !badgeOfficial.classList.contains('empty')) return Swal.fire({ title: 'ไม่สามารถแจ้งลาได้', text: 'วันนี้คุณได้บันทึกไปราชการไว้แล้ว หากต้องการเปลี่ยนสถานะ กรุณาให้ผู้ดูแลยกเลิกข้อมูลเดิมก่อน', icon: 'warning', confirmButtonColor: '#7c3aed' });
 
-      Swal.fire({ title: 'แจ้งลาหยุด', input: 'select', inputOptions: { 'ลาป่วย': 'ลาป่วย', 'ลากิจ': 'ลากิจ', 'ลาพักร้อน': 'ลาพักร้อน', 'อื่นๆ': 'อื่นๆ' }, inputPlaceholder: 'เลือกประเภทการลา', showCancelButton: true, confirmButtonText: 'ถัดไป', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#3b82f6', inputValidator: (value) => { return new Promise((resolve) => { if (value) resolve(); else resolve('กรุณาเลือกประเภทการลา'); }); }
+      Swal.fire({ title: 'แจ้งลาหยุด', input: 'select', inputOptions: { 'ลาป่วย': 'ลาป่วย', 'ลากิจ': 'ลากิจ', 'เข้าสาย': 'เข้าสาย', 'อื่นๆ': 'อื่นๆ' }, inputPlaceholder: 'เลือกประเภทการลา', showCancelButton: true, confirmButtonText: 'ถัดไป', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#3b82f6', inputValidator: (value) => { return new Promise((resolve) => { if (value) resolve(); else resolve('กรุณาเลือกประเภทการลา'); }); }
       }).then((result) => {
         if (result.isConfirmed) {
           let leaveType = result.value;
@@ -1488,6 +1494,59 @@
       fetchAPI('saveAttendance', payload)
         .then(function(res) { Swal.fire({ icon: 'success', title: 'สำเร็จ', text: res.message, timer: 1500, showConfirmButton: false }); fetchLatestData(); })
         .catch(function(err) { Swal.fire('เกิดข้อผิดพลาด', err.toString(), 'error'); });
+    }
+    
+    function handleLeaveSchool() {
+      if(!currentUser) return Swal.fire('ผิดพลาด', 'กรุณาล็อกอินใหม่', 'error');
+      
+      Swal.fire({
+        title: 'ขออนุญาตออกนอกบริเวณโรงเรียน',
+        html: `
+          <div style="text-align:left; font-size:0.9rem;">
+            <label style="font-weight:700; display:block; margin-bottom:5px;">เวลาออก</label>
+            <input id="swal-time" type="time" class="swal2-input" style="width: 100%; margin:0 0 15px 0;">
+            <label style="font-weight:700; display:block; margin-bottom:5px;">รายการ / เหตุผล</label>
+            <textarea id="swal-reason" class="swal2-textarea" placeholder="ระบุเหตุผลในการออกนอกบริเวณ..." style="width: 100%; margin:0 0 15px 0;"></textarea>
+            <label style="font-weight:700; display:block; margin-bottom:5px;">ผู้ปฏิบัติงานแทน</label>
+            <input id="swal-substitute" type="text" class="swal2-input" placeholder="ชื่อผู้ปฏิบัติงานแทน..." style="width: 100%; margin:0;">
+          </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'ยืนยันและส่งแจ้งเตือน',
+        cancelButtonText: 'ยกเลิก',
+        confirmButtonColor: '#0f766e',
+        preConfirm: () => {
+          const timeOut = document.getElementById('swal-time').value;
+          const reason = document.getElementById('swal-reason').value;
+          const substitute = document.getElementById('swal-substitute').value;
+          if (!timeOut || !reason || !substitute) {
+            Swal.showValidationMessage('กรุณากรอกข้อมูลให้ครบถ้วน');
+            return false;
+          }
+          return { timeOut: timeOut, reason: reason, substitute: substitute, name: currentUser.name, uid: currentUser.id };
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({ title: 'กำลังบันทึกและแจ้งเตือน...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+          
+          fetchAPI('processLeaveSchool', result.value).then(res => {
+            if(res && res.ok) {
+              Swal.fire('สำเร็จ!', 'บันทึกข้อมูลและส่งแจ้งเตือนผ่าน Telegram เรียบร้อยแล้ว', 'success');
+              const badgeOutschool = document.getElementById('statusBadgeOutschool');
+              if(badgeOutschool) {
+                 badgeOutschool.innerHTML = '<i data-lucide="check" size="16"></i> <span>บันทึกแล้ว</span>';
+                 badgeOutschool.classList.remove('empty');
+                 badgeOutschool.classList.add('leave');
+              }
+              fetchLatestData();
+            } else {
+              Swal.fire('ผิดพลาด', res.message || 'ไม่สามารถบันทึกข้อมูลได้', 'error');
+            }
+          }).catch(err => {
+             Swal.fire('ผิดพลาด', err.toString(), 'error');
+          });
+        }
+      });
     }
 
     function openRegisterModal() { document.getElementById('regModal').style.display = 'flex'; }
