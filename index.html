@@ -217,6 +217,24 @@
     .stat-card.out { background: linear-gradient(135deg, #f59e0b 0%, #c2410c 100%); }
     .stat-card.early { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); }
 
+    /* การ์ดจำนวนบุคลากรแยกประเภท */
+    .type-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 20px; }
+    .type-card { background: rgba(255, 255, 255, 0.96); border: 2px solid transparent; border-radius: var(--radius-xl); padding: 18px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); cursor: pointer; transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease; }
+    .type-card:hover { transform: translateY(-3px); box-shadow: 0 16px 32px rgba(0,0,0,0.10); }
+    .type-card.active { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(244, 63, 94, 0.12), 0 16px 32px rgba(0,0,0,0.10); }
+    .type-card-head { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1rem; color: var(--text-main); }
+    .type-card-head .type-icon { width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0; }
+    .type-count { font-family: 'Inter', sans-serif; font-size: 2.1rem; font-weight: 800; line-height: 1; margin: 12px 0 2px; color: var(--text-main); }
+    .type-count small { font-family: 'Sarabun', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--text-sub); }
+    .type-breakdown { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 0.8rem; font-weight: 700; color: var(--text-sub); margin-top: 8px; }
+    .type-card-hint { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
+    .type-filter-chip { display: none; align-items: center; gap: 6px; background: #fff1f2; color: var(--primary-dark); border: 1px solid #fecdd3; padding: 8px 14px; border-radius: 999px; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+    .badge-type { padding: 5px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; white-space: nowrap; }
+    .badge-type.civil { background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; }
+    .badge-type.employee { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+    .badge-type.officer { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+    .badge-type.none { background: #f1f5f9; color: #64748b; border: 1px dashed #cbd5e1; }
+
     .chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
     .chart-card { background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(10px); padding: 20px; border-radius: var(--radius-xl); box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid rgba(226, 232, 240, 0.8); display: flex; flex-direction: column; align-items: center; }
     .chart-wrapper { width: 100%; height: 230px; position: relative; }
@@ -573,6 +591,35 @@
             <div class="stat-card early"><div class="stat-icon"><i data-lucide="clock-8" size="28"></i></div><div class="stat-info"><h3 id="adminTotalEarly">0</h3><p>กลับก่อน (คน)</p></div></div>
           </div>
 
+          <div>
+            <div class="table-header" style="margin-bottom: 12px;">
+              <h2><i data-lucide="users-round" size="20" style="color:var(--primary);"></i> จำนวนบุคลากรแยกตามประเภท</h2>
+              <span class="type-card-hint"><i data-lucide="mouse-pointer-click" size="14"></i> คลิกการ์ดเพื่อกรองรายชื่อในตารางด้านล่าง</span>
+            </div>
+            <div class="type-card-grid">
+              <div class="type-card" id="typeCardCivil" onclick="toggleTypeFilter('ข้าราชการ')" title="ดูรายชื่อข้าราชการ">
+                <div class="type-card-head"><div class="type-icon" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9);"><i data-lucide="graduation-cap" size="20"></i></div><span>ข้าราชการ</span></div>
+                <div class="type-count"><span id="typeCountCivil">0</span> <small>คน</small></div>
+                <div class="type-breakdown" id="typeBreakCivil"></div>
+              </div>
+              <div class="type-card" id="typeCardEmployee" onclick="toggleTypeFilter('ลูกจ้าง')" title="ดูรายชื่อลูกจ้าง">
+                <div class="type-card-head"><div class="type-icon" style="background:linear-gradient(135deg,#f59e0b,#b45309);"><i data-lucide="hard-hat" size="20"></i></div><span>ลูกจ้าง</span></div>
+                <div class="type-count"><span id="typeCountEmployee">0</span> <small>คน</small></div>
+                <div class="type-breakdown" id="typeBreakEmployee"></div>
+              </div>
+              <div class="type-card" id="typeCardOfficer" onclick="toggleTypeFilter('พนักงานราชการ')" title="ดูรายชื่อพนักงานราชการ">
+                <div class="type-card-head"><div class="type-icon" style="background:linear-gradient(135deg,#10b981,#047857);"><i data-lucide="briefcase" size="20"></i></div><span>พนักงานราชการ</span></div>
+                <div class="type-count"><span id="typeCountOfficer">0</span> <small>คน</small></div>
+                <div class="type-breakdown" id="typeBreakOfficer"></div>
+              </div>
+              <div class="type-card" id="typeCardOther" onclick="toggleTypeFilter('ไม่ระบุ')" title="ดูรายชื่อที่ยังไม่ระบุประเภท" style="display:none;">
+                <div class="type-card-head"><div class="type-icon" style="background:linear-gradient(135deg,#94a3b8,#475569);"><i data-lucide="users" size="20"></i></div><span>ไม่ระบุประเภท</span></div>
+                <div class="type-count"><span id="typeCountOther">0</span> <small>คน</small></div>
+                <div class="type-breakdown" id="typeBreakOther"></div>
+              </div>
+            </div>
+          </div>
+
           <div class="chart-grid">
             <div class="chart-card"><h4><i data-lucide="pie-chart" size="18"></i> สถิติการเข้างาน</h4><div class="chart-wrapper"><canvas id="chartIn"></canvas></div></div>
             <div class="chart-card"><h4><i data-lucide="pie-chart" size="18"></i> สถิติการกลับ</h4><div class="chart-wrapper"><canvas id="chartOut"></canvas></div></div>
@@ -583,12 +630,15 @@
           <div class="admin-table-container">
             <div class="table-header">
               <h2><i data-lucide="list-checks" style="color:var(--primary);"></i> รายชื่อผู้ลงเวลาประจำวัน</h2>
-              <button onclick="printDailyTable()" class="btn-main" style="padding: 10px 16px; width: auto; display: inline-flex; align-items: center; gap: 8px;"><i data-lucide="printer" size="16"></i> พิมพ์ข้อมูล</button>
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <span class="type-filter-chip" id="typeFilterChip" onclick="toggleTypeFilter(null)" title="คลิกเพื่อล้างตัวกรอง"></span>
+                <button onclick="printDailyTable()" class="btn-main" style="padding: 10px 16px; width: auto; display: inline-flex; align-items: center; gap: 8px;"><i data-lucide="printer" size="16"></i> พิมพ์ข้อมูล</button>
+              </div>
             </div>
             <div style="overflow-x: auto;">
               <table class="admin-table">
-                <thead><tr><th>ลำดับ</th><th>รหัสประจำตัว</th><th>ชื่อ-นามสกุล</th><th>เวลามา (IN)</th><th>เวลากลับ (OUT)</th><th>ลา / ไปราชการ / หมายเหตุ</th><th>จัดการ</th></tr></thead>
-                <tbody id="adminTableBody"><tr><td colspan="7" style="text-align: center; color: var(--text-muted);">กำลังโหลดข้อมูล...</td></tr></tbody>
+                <thead><tr><th>ลำดับ</th><th>รหัสประจำตัว</th><th>ชื่อ-นามสกุล</th><th>ประเภท</th><th>เวลามา (IN)</th><th>เวลากลับ (OUT)</th><th>ลา / ไปราชการ / หมายเหตุ</th><th>จัดการ</th></tr></thead>
+                <tbody id="adminTableBody"><tr><td colspan="8" style="text-align: center; color: var(--text-muted);">กำลังโหลดข้อมูล...</td></tr></tbody>
               </table>
             </div>
           </div>
@@ -669,8 +719,8 @@
             </div>
             <div style="overflow-x: auto;">
               <table class="admin-table">
-                <thead><tr><th>ลำดับ</th><th>รหัสผู้ใช้งาน</th><th>ชื่อ-นามสกุล</th><th>ตำแหน่ง</th><th>แผนก</th><th>จัดการ</th></tr></thead>
-                <tbody id="adminUsersBody"><tr><td colspan="6" style="text-align: center; color: var(--text-muted);">กำลังโหลดข้อมูล...</td></tr></tbody>
+                <thead><tr><th>ลำดับ</th><th>รหัสผู้ใช้งาน</th><th>ชื่อ-นามสกุล</th><th>ตำแหน่ง</th><th>แผนก</th><th>ประเภท</th><th>จัดการ</th></tr></thead>
+                <tbody id="adminUsersBody"><tr><td colspan="7" style="text-align: center; color: var(--text-muted);">กำลังโหลดข้อมูล...</td></tr></tbody>
               </table>
             </div>
           </div>
@@ -865,6 +915,15 @@
     let adminMapObj = null; let adminMapMarkers = []; let currentLogsForMap = [];
     let configMapObj = null; let configMarker = null; let configCircle = null;
 
+    let lastAdminSummary = null;
+    let currentTypeFilter = null;
+    const TYPE_CARDS = [
+      { type: 'ข้าราชการ', card: 'typeCardCivil', count: 'typeCountCivil', brk: 'typeBreakCivil' },
+      { type: 'ลูกจ้าง', card: 'typeCardEmployee', count: 'typeCountEmployee', brk: 'typeBreakEmployee' },
+      { type: 'พนักงานราชการ', card: 'typeCardOfficer', count: 'typeCountOfficer', brk: 'typeBreakOfficer' },
+      { type: 'ไม่ระบุ', card: 'typeCardOther', count: 'typeCountOther', brk: 'typeBreakOther' }
+    ];
+
     let satelliteLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', { maxZoom: 20, attribution: '© Google Maps' });
     let satelliteLayer2 = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', { maxZoom: 20, attribution: '© Google Maps' });
 
@@ -1039,11 +1098,12 @@
     function loadAdminData() {
       let dashDate = document.getElementById('adminDateSelect'); let mapDate = document.getElementById('adminMapDateSelect'); let dateInput = dashDate.value;
       if (!dateInput) { let today = new Date(); let dd = String(today.getDate()).padStart(2, '0'); let mm = String(today.getMonth() + 1).padStart(2, '0'); let yyyy = today.getFullYear(); dateInput = yyyy + '-' + mm + '-' + dd; dashDate.value = dateInput; mapDate.value = dateInput; }
-      document.getElementById('adminTableBody').innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;"><div class="spinner" style="margin: 0 auto; width:30px; height:30px; border-width: 3px;"></div></td></tr>';
+      document.getElementById('adminTableBody').innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 30px;"><div class="spinner" style="margin: 0 auto; width:30px; height:30px; border-width: 3px;"></div></td></tr>';
       document.getElementById('adminMapTableBody').innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px;"><div class="spinner" style="margin: 0 auto; width:30px; height:30px; border-width: 3px;"></div></td></tr>';
       
       fetchAPI('getAdminSummary', { date: dateInput })
         .then(function(data) {
+          lastAdminSummary = data;
           currentLogsForMap = data.logs; 
           let mapContainer = document.getElementById('adminViewMap');
           if (adminMapObj && mapContainer && mapContainer.style.display === 'block') { renderMapMarkers(currentLogsForMap); } else { renderMapTable(currentLogsForMap.filter(l => l.lat && l.lng)); } 
@@ -1052,41 +1112,109 @@
           document.getElementById('adminReportTitle').innerText = 'ข้อมูลประจำ ' + data.dateText; document.getElementById('adminMapReportTitle').innerText = 'ข้อมูลประจำ ' + data.dateText;
           updateChartsData(data.totalIn, data.totalLate || 0, data.totalOut, data.totalEarly || 0, data.logs);
 
-          let html = '';
-          if(data.logs.length === 0) { html = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted);"><i data-lucide="calendar-x-2" size="32" style="margin-bottom:10px; display:block; margin-left:auto; margin-right:auto;"></i>ไม่พบข้อมูลการลงเวลาในวันที่เลือก</td></tr>'; } 
-          else {
-            data.logs.forEach((log, index) => {
-              let badgeInClass = "in"; let iconIn = "log-in"; let textInAppend = "";
-              if (log.isLate) { badgeInClass = "late"; iconIn = "clock-4"; textInAppend = " (สาย)"; }
-              let badgeIn = log.timeIn !== "-" ? `<span class="badge-time ${badgeInClass}"><i data-lucide="${iconIn}" size="14"></i> ${log.timeIn}${textInAppend}</span>` : `<span class="badge-time none">--:--</span>`;
-              
-              let badgeOutClass = "out"; let iconOut = "log-out"; let textOutAppend = "";
-              if (log.isEarly) { badgeOutClass = "early"; iconOut = "clock-8"; textOutAppend = " (ก่อน)"; }
-              if (log.note && log.note.includes("AUTO")) { textOutAppend = " "; }
-              let badgeOut = log.timeOut !== "-" ? `<span class="badge-time ${badgeOutClass}"><i data-lucide="${iconOut}" size="14"></i> ${log.timeOut}${textOutAppend}</span>` : `<span class="badge-time none">--:--</span>`;
-              
-              let specialBadge = `<span class="badge-time none">-</span>`;
-              if (log.leave !== "-") {
-                specialBadge = `<span class="badge-time leave"><i data-lucide="calendar-off" size="14"></i> ${log.leave}</span>`;
-              } else if (log.official !== "-") {
-                specialBadge = `<span class="badge-time official"><i data-lucide="briefcase" size="14"></i> ไปราชการ: ${log.official}</span>`;
-              } else if (log.out_school !== "-") {
-                specialBadge = `<span class="badge-time leave"><i data-lucide="map" size="14"></i> นอกสถานที่: ${log.out_school}</span>`;
-              }
-
-              let actionHtml = '-';
-              if (log.leave !== "-") {
-                actionHtml = `<button onclick="confirmCancelLeave('${log.uid}', '${dateInput}')" style="background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="trash-2" size="12"></i> ยกเลิกลา</button>`;
-              } else if (log.official !== "-") {
-                actionHtml = `<button onclick="confirmCancelOfficialDuty('${log.uid}', '${dateInput}')" style="background: #7c3aed; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="trash-2" size="12"></i> ยกเลิกไปราชการ</button>`;
-              }
-
-              html += `<tr><td>${index + 1}</td><td style="font-weight:700;">${log.uid}</td><td>${log.name}</td><td>${badgeIn}</td><td>${badgeOut}</td><td>${specialBadge}</td><td>${actionHtml}</td></tr>`;
-            });
-          }
-          document.getElementById('adminTableBody').innerHTML = html; if (window.lucide) { lucide.createIcons(); }
+          renderCategoryCards(data);
+          renderDailyTable(data.logs, dateInput);
         })
         .catch(err => console.error("โหลดข้อมูล Admin ผิดพลาด", err));
+    }
+
+    function typeBadgeHtml(type) {
+      const t = type || 'ไม่ระบุ';
+      const cls = t === 'ข้าราชการ' ? 'civil' : (t === 'ลูกจ้าง' ? 'employee' : (t === 'พนักงานราชการ' ? 'officer' : 'none'));
+      return `<span class="badge-type ${cls}">${t}</span>`;
+    }
+
+    function renderCategoryCards(summary) {
+      const cats = (summary && summary.categorySummary) || [];
+      TYPE_CARDS.forEach(function (item) {
+        const card = document.getElementById(item.card);
+        if (!card) return;
+        const cat = cats.filter(function (c) { return c.type === item.type; })[0];
+        const total = cat ? cat.total : 0;
+
+        if (item.type === 'ไม่ระบุ') {
+          if (total === 0) {
+            card.style.display = 'none';
+            if (currentTypeFilter === item.type) currentTypeFilter = null;
+          } else {
+            card.style.display = '';
+          }
+        }
+
+        document.getElementById(item.count).innerText = total;
+        document.getElementById(item.brk).innerHTML = cat
+          ? '<span style="color:#059669;">มา ' + cat.present + '</span>'
+            + '<span style="color:#e11d48;">สาย ' + cat.late + '</span>'
+            + '<span style="color:#1d4ed8;">ลา ' + cat.leave + '</span>'
+            + '<span style="color:#6d28d9;">ราชการ ' + cat.official + '</span>'
+            + (cat.missing > 0 ? '<span style="color:#64748b;">ไม่ลงเวลา ' + cat.missing + '</span>' : '')
+          : '<span style="color:#94a3b8;">ไม่มีข้อมูล</span>';
+        card.classList.toggle('active', currentTypeFilter === item.type);
+      });
+    }
+
+    function toggleTypeFilter(type) {
+      currentTypeFilter = (type && currentTypeFilter !== type) ? type : null;
+      if (!lastAdminSummary) return;
+      renderCategoryCards(lastAdminSummary);
+      renderDailyTable(lastAdminSummary.logs || [], document.getElementById('adminDateSelect').value);
+    }
+
+    function renderDailyTable(logs, dateInput) {
+      const allLogs = logs || [];
+      const filtered = currentTypeFilter
+        ? allLogs.filter(function (l) { return (l.type || 'ไม่ระบุ') === currentTypeFilter; })
+        : allLogs;
+
+      const chip = document.getElementById('typeFilterChip');
+      if (chip) {
+        if (currentTypeFilter) {
+          chip.style.display = 'inline-flex';
+          chip.innerHTML = `<i data-lucide="filter" size="14"></i> กำลังแสดง: ${currentTypeFilter} (${filtered.length} คน) <i data-lucide="x" size="14"></i>`;
+        } else {
+          chip.style.display = 'none';
+          chip.innerHTML = '';
+        }
+      }
+
+      let html = '';
+      if (filtered.length === 0) {
+        const emptyText = currentTypeFilter
+          ? 'ไม่พบรายชื่อประเภท "' + currentTypeFilter + '" ในวันที่เลือก'
+          : 'ไม่พบข้อมูลการลงเวลาในวันที่เลือก';
+        html = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: var(--text-muted);"><i data-lucide="calendar-x-2" size="32" style="margin-bottom:10px; display:block; margin-left:auto; margin-right:auto;"></i>' + emptyText + '</td></tr>';
+      } 
+      else {
+        filtered.forEach((log, index) => {
+          let badgeInClass = "in"; let iconIn = "log-in"; let textInAppend = "";
+          if (log.isLate) { badgeInClass = "late"; iconIn = "clock-4"; textInAppend = " (สาย)"; }
+          let badgeIn = log.timeIn !== "-" ? `<span class="badge-time ${badgeInClass}"><i data-lucide="${iconIn}" size="14"></i> ${log.timeIn}${textInAppend}</span>` : `<span class="badge-time none">--:--</span>`;
+          
+          let badgeOutClass = "out"; let iconOut = "log-out"; let textOutAppend = "";
+          if (log.isEarly) { badgeOutClass = "early"; iconOut = "clock-8"; textOutAppend = " (ก่อน)"; }
+          if (log.note && log.note.includes("AUTO")) { textOutAppend = " "; }
+          let badgeOut = log.timeOut !== "-" ? `<span class="badge-time ${badgeOutClass}"><i data-lucide="${iconOut}" size="14"></i> ${log.timeOut}${textOutAppend}</span>` : `<span class="badge-time none">--:--</span>`;
+          
+          let specialBadge = `<span class="badge-time none">-</span>`;
+          if (log.leave !== "-") {
+            specialBadge = `<span class="badge-time leave"><i data-lucide="calendar-off" size="14"></i> ${log.leave}</span>`;
+          } else if (log.official !== "-") {
+            specialBadge = `<span class="badge-time official"><i data-lucide="briefcase" size="14"></i> ไปราชการ: ${log.official}</span>`;
+          } else if (log.out_school !== "-") {
+            specialBadge = `<span class="badge-time leave"><i data-lucide="map" size="14"></i> นอกสถานที่: ${log.out_school}</span>`;
+          }
+
+          let actionHtml = '-';
+          if (log.leave !== "-") {
+            actionHtml = `<button onclick="confirmCancelLeave('${log.uid}', '${dateInput}')" style="background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="trash-2" size="12"></i> ยกเลิกลา</button>`;
+          } else if (log.official !== "-") {
+            actionHtml = `<button onclick="confirmCancelOfficialDuty('${log.uid}', '${dateInput}')" style="background: #7c3aed; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="trash-2" size="12"></i> ยกเลิกไปราชการ</button>`;
+          }
+
+          html += `<tr><td>${index + 1}</td><td style="font-weight:700;">${log.uid}</td><td>${log.name}</td><td>${typeBadgeHtml(log.type)}</td><td>${badgeIn}</td><td>${badgeOut}</td><td>${specialBadge}</td><td>${actionHtml}</td></tr>`;
+        });
+      }
+      document.getElementById('adminTableBody').innerHTML = html; if (window.lucide) { lucide.createIcons(); }
     }
 
     function loadAdminUserSummary() {
@@ -1113,13 +1241,13 @@
     }
     
     function loadAdminUsers() {
-      document.getElementById('adminUsersBody').innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 30px;"><div class="spinner" style="margin: 0 auto; width:30px; height:30px; border-width: 3px;"></div></td></tr>';
+      document.getElementById('adminUsersBody').innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;"><div class="spinner" style="margin: 0 auto; width:30px; height:30px; border-width: 3px;"></div></td></tr>';
       
       fetchAPI('getAdminUsersList')
         .then(function(users) {
           let html = '';
           if (users.length === 0) {
-            html = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">ไม่พบข้อมูลสมาชิก</td></tr>';
+            html = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted);">ไม่พบข้อมูลสมาชิก</td></tr>';
           } else {
             users.forEach((u, idx) => {
               html += `<tr>
@@ -1128,6 +1256,7 @@
                 <td style="text-align:left;">${u.name}</td>
                 <td>${u.pos}</td>
                 <td>${u.dept}</td>
+                <td>${typeBadgeHtml(u.type)}</td>
                 <td><button onclick="confirmDeleteUser('${u.uid}', '${escapeHtml(u.name)}')" style="background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="user-minus" size="14"></i> ลบผู้ใช้</button></td>
               </tr>`;
             });
